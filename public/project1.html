@@ -2,113 +2,145 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simple Calculator</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
       height: 100vh;
       background: #f4f4f4;
+      font-family: Arial, sans-serif;
     }
     .calculator {
       background: #fff;
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0px 4px 12px rgba(0,0,0,0.2);
-      width: 280px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-    #display {
-      width: 90%;
+    #screen {
+      width: 95%;
       height: 50px;
-      margin-bottom: 15px;
-      text-align: right;
       font-size: 24px;
-      padding: 10px;
+      text-align: right;
+      margin-bottom: 10px;
+      padding: 5px;
       border: 1px solid #ddd;
-      border-radius: 8px;
+      border-radius: 5px;
     }
     .buttons {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, 70px);
       gap: 10px;
     }
     button {
-      padding: 20px;
+      height: 50px;
       font-size: 18px;
       border: none;
-      border-radius: 8px;
-      background: #e0e0e0;
+      border-radius: 5px;
       cursor: pointer;
+      background: #eee;
       transition: background 0.2s;
     }
     button:hover {
-      background: #d4d4d4;
+      background: #ddd;
     }
     .equal {
       grid-column: span 2;
-      background: #149918;
+      background: #545a55;
       color: white;
-    }
-    .equal:hover {
-      background: #45a049;
     }
   </style>
 </head>
 <body>
   <div class="calculator">
-    <input type="text" id="display" disabled>
+    <input type="text" id="screen" disabled>
     <div class="buttons">
-      <button onclick="clearDisplay()">C</button>
-      <button onclick="clearDisplay()">CE</button>
+      <button onclick="clearScreen()">C</button>
+      <button onclick="backspace()">⌫</button>
       <button onclick="percentage()">%</button>
-      <button onclick="appendValue('/')">÷</button> 
-      <button onclick="appendValue('7')">7</button>
-      <button onclick="appendValue('8')">8</button>
-      <button onclick="appendValue('9')">9</button> 
-      <button onclick="appendValue('*')">x</button>
-      <button onclick="appendValue('4')">4</button>
-      <button onclick="appendValue('5')">5</button>
-      <button onclick="appendValue('6')">6</button>
-      <button onclick="appendValue('-')">-</button>
-      <button onclick="appendValue('1')">1</button>
-      <button onclick="appendValue('2')">2</button>
-      <button onclick="appendValue('3')">3</button>
-      <button onclick="appendValue('+')">+</button>
-      <button onclick="appendValue('0')">0</button>
-      <button onclick="appendValue('.')">.</button>
-      <button onclick="calculate()" class="equal">=</button>
+      <button onclick="append('/')">÷</button>
       
+      <button onclick="append('7')">7</button>
+      <button onclick="append('8')">8</button>
+      <button onclick="append('9')">9</button>
+      <button onclick="append('*')">x</button>
+      
+      <button onclick="append('4')">4</button>
+      <button onclick="append('5')">5</button>
+      <button onclick="append('6')">6</button>
+      <button onclick="append('-')">-</button>
+      
+      <button onclick="append('1')">1</button>
+      <button onclick="append('2')">2</button>
+      <button onclick="append('3')">3</button>
+      <button onclick="append('+')">+</button>
+      
+      <button onclick="append('0')">0</button>
+      <button onclick="append('.')">.</button>
+      <button class="equal" onclick="calculate()">=</button>
     </div>
   </div>
 
-   <script>
-    let display = document.getElementById('display');
+  <script>
+    let currentInput = "";
 
-    function appendValue(value) {
-      display.value += value;
+    // Format angka ribuan (1,000 -> 10,000)
+    function formatNumber(num) {
+      if (num === "" || isNaN(num)) return num;
+      return Number(num).toLocaleString("en-US");
     }
 
-    function clearDisplay() {
-      display.value = '';
+    function updateScreen() {
+      document.getElementById("screen").value = formatInput(currentInput);
     }
 
+    // Format input: hanya angka yg dikasih separator, operator tetap normal
+    function formatInput(input) {
+      return input.replace(/\d+(\.\d+)?/g, match => formatNumber(match));
+    }
+
+    function append(value) {
+      currentInput += value;
+      updateScreen();
+    }
+
+    function clearScreen() {
+      currentInput = "";
+      updateScreen();
+    }
+
+    function backspace() {
+      currentInput = currentInput.slice(0, -1);
+      updateScreen();
+    }
+      function percentage() {
+      // cari angka terakhir
+      let match = currentInput.match(/(\d+(\.\d+)?)$/);
+      if (match) {
+        let number = parseFloat(match[0].replace(/,/g, ""));
+        let percentValue = number / 100;
+        currentInput = currentInput.slice(0, -match[0].length) + percentValue;
+        updateScreen();
+      }
+    }
+
+    
     function calculate() {
       try {
-        display.value = eval(display.value);
+        // Ganti koma biar jadi angka valid
+        let result = eval(currentInput.replace(/,/g, ""));
+        currentInput = result.toString();
+        updateScreen();
       } catch {
-        display.value = 'Error';
+        currentInput = "Error";
+        updateScreen();
+        currentInput = "";
       }
     }
 
-    function percentage() {
-      try {
-        display.value = parseFloat(display.value) / 100;
-      } catch {
-        display.value = 'Error';
-      }
-    }
+    updateScreen(); // awalnya kosong
   </script>
 </body>
 </html>
