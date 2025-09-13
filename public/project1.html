@@ -62,7 +62,7 @@
     <div class="buttons">
       <button onclick="clearDisplay()">C</button>
       <button onclick="clearDisplay()">CE</button>
-      <button onclick="appendValue('%')">%</button>
+      <button onclick="percentage()">%</button>
       <button onclick="appendValue('/')">÷</button> 
       <button onclick="appendValue('7')">7</button>
       <button onclick="appendValue('8')">8</button>
@@ -83,7 +83,7 @@
     </div>
   </div>
 
-  <script>
+   <script>
     let display = document.getElementById('display');
 
     function appendValue(value) {
@@ -97,6 +97,14 @@
     function calculate() {
       try {
         display.value = eval(display.value);
+      } catch {
+        display.value = 'Error';
+      }
+    }
+
+    function percentage() {
+      try {
+        display.value = parseFloat(display.value) / 100;
       } catch {
         display.value = 'Error';
       }
